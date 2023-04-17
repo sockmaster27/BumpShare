@@ -1,5 +1,23 @@
+* {
+    font-family: 'Lexend Mega', sans-serif;
+}
+
 body {
     background-color: red;
+    transition: background-color 0.3s;
+}
+
+.start {
+    background-color: transparent;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    border: none;
+    color: white;
+    font-size: 30px;
+    text-transform: uppercase;
 }
 
 .bang {
@@ -12,6 +30,10 @@ body {
 
     scale: 1;
     transition: scale 0.5s;
+}
+
+.bang.waiting {
+    scale: 0;
 }
 
 .bang.banged {

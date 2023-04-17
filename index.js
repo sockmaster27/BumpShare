@@ -51,13 +51,6 @@ function becomeStable() {
     upSound.play();
 }
 
-function becomeUnstable() {
-    stable = false;
-    const body = document.querySelector("body");
-    body.style.backgroundColor = "red";
-    downSound.play();
-}
-
 function bump() {
     const bang = document.querySelector(".bang");
     bumpSound.play();
@@ -68,4 +61,17 @@ function bump() {
     // so it's just fallback if the transitionend doesn't successfully remove the class.
     bang.addEventListener("transitionend", () => bang.classList.remove("banged"), { once: true });
     setTimeout(() => bang.classList.remove("banged"), 200);
+}
+
+function becomeUnstable() {
+    stable = false;
+    const body = document.querySelector("body");
+    body.style.backgroundColor = "red";
+    downSound.play();
+
+    // Cancel last bump
+    bumpSound.pause();
+    bumpSound.currentTime = 0;
+    const bang = document.querySelector(".bang");
+    bang.classList.remove("banged");
 }

@@ -9,7 +9,7 @@ enableButton.addEventListener("click", () => {
     const bang = document.querySelector(".bang");
     bang.classList.remove("waiting");
 
-    initBumpDetector(onStable, onUnstable, onBump);
+    initBumpDetector(onStable, onUnstable, onBump, onDoubleBump);
 });
 
 
@@ -37,7 +37,6 @@ function onUnstable() {
 
 function onBump() {
     const bang = document.querySelector(".bang");
-    bumpSound.play();
     bang.classList.add("banged");
 
     // If this is triggered multiple times in a row, the transitionend event acts weird.
@@ -45,4 +44,9 @@ function onBump() {
     // so it's just fallback if the transitionend doesn't successfully remove the class.
     bang.addEventListener("transitionend", () => bang.classList.remove("banged"), { once: true });
     setTimeout(() => bang.classList.remove("banged"), 200);
+}
+
+function onDoubleBump() {
+    onBump();
+    bumpSound.play();
 }

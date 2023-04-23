@@ -1,8 +1,13 @@
-export function initBumpDetector(onStable, onUnstable, onBump) {
+export function initBumpDetector(onStable, onUnstable, onBump, onDoubleBump) {
     let stabilityTimer;
     let potentiallyStable = false;
     let stable = false;
     let facingUp = false;
+
+    let lastBumpTime = 0;
+    const doubleBumpThresh = 500;
+
+    let inBump = false;
 
     addEventListener("deviceorientation", (event) => {
         const { alpha, beta, gamma } = event;
@@ -37,7 +42,18 @@ export function initBumpDetector(onStable, onUnstable, onBump) {
 
         potentiallyStable = stableNow;
 
-        if (stable && amplitude >= 5)
-            onBump();
+        if (stable && amplitude >= 5 && !inBump) {
+            const now = performance.now();
+            if (now - lastBumpTime < doubleBumpThresh) {
+                lastBumpTime = 0;
+                onDoubleBump();
+            } else {
+                lastBumpTime = now;
+                onBump();
+            }
+
+            inBump = true;
+            setTimeout(() => inBump = false, 200);
+        }
     });
 }

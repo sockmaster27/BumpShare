@@ -1,3 +1,5 @@
+import { initBumpDetector } from "./bumpDetection.js";
+
 const enableButton = document.querySelector(".start");
 enableButton.addEventListener("click", () => {
     // Safari requires a user gesture to enable device orientation events.
@@ -7,7 +9,7 @@ enableButton.addEventListener("click", () => {
     const bang = document.querySelector(".bang");
     bang.classList.remove("waiting");
 
-    init();
+    initBumpDetector(onStable, onUnstable, onBump);
 });
 
 
@@ -15,73 +17,32 @@ const upSound = new Audio("resources/up.mp3");
 const downSound = new Audio("resources/down.mp3");
 const bumpSound = new Audio("resources/bump.mp3");
 
-function init() {
-    let stabilityTimer;
-    let potentiallyStable = false;
-    let stable = false;
-    let facingUp = false;
+function onStable() {
+    const body = document.querySelector("body");
+    body.style.backgroundColor = "green";
+    upSound.play();
+}
 
-    addEventListener("deviceorientation", (event) => {
-        const { alpha, beta, gamma } = event;
-        const thresh = 5;
-        facingUp = -thresh < beta && beta < thresh
-            && -thresh < gamma & gamma < thresh;
-    });
+function onUnstable() {
+    const body = document.querySelector("body");
+    body.style.backgroundColor = "red";
+    downSound.play();
 
-    addEventListener("devicemotion", (event) => {
-        const { x, y, z } = event.acceleration;
-        const amplitude = x * x + y * y + z * z;
+    // Cancel last bump
+    bumpSound.pause();
+    bumpSound.currentTime = 0;
+    const bang = document.querySelector(".bang");
+    bang.classList.remove("banged");
+}
 
-        const thresh = 1;
-        const still = amplitude < thresh;
+function onBump() {
+    const bang = document.querySelector(".bang");
+    bumpSound.play();
+    bang.classList.add("banged");
 
-        const stableNow = still && facingUp;
-        if (!stable && stableNow && !potentiallyStable)
-            stabilityTimer = setTimeout(becomeStable, 300);
-        else if (!stable && !stableNow && potentiallyStable)
-            clearTimeout(stabilityTimer);
-
-        else if (stable && !stableNow && potentiallyStable)
-            stabilityTimer = setTimeout(becomeUnstable, 100);
-        else if (stable && stableNow && !potentiallyStable)
-            clearTimeout(stabilityTimer);
-
-        potentiallyStable = stableNow;
-
-        if (stable && amplitude >= 5)
-            bump();
-    });
-
-
-    function becomeStable() {
-        stable = true;
-        const body = document.querySelector("body");
-        body.style.backgroundColor = "green";
-        upSound.play();
-    }
-
-    function bump() {
-        const bang = document.querySelector(".bang");
-        bumpSound.play();
-        bang.classList.add("banged");
-
-        // If this is triggered multiple times in a row, the transitionend event acts weird.
-        // Only using setTimeout for timing the animation looks weird though, 
-        // so it's just fallback if the transitionend doesn't successfully remove the class.
-        bang.addEventListener("transitionend", () => bang.classList.remove("banged"), { once: true });
-        setTimeout(() => bang.classList.remove("banged"), 200);
-    }
-
-    function becomeUnstable() {
-        stable = false;
-        const body = document.querySelector("body");
-        body.style.backgroundColor = "red";
-        downSound.play();
-
-        // Cancel last bump
-        bumpSound.pause();
-        bumpSound.currentTime = 0;
-        const bang = document.querySelector(".bang");
-        bang.classList.remove("banged");
-    }
+    // If this is triggered multiple times in a row, the transitionend event acts weird.
+    // Only using setTimeout for timing the animation looks weird though, 
+    // so it's just fallback if the transitionend doesn't successfully remove the class.
+    bang.addEventListener("transitionend", () => bang.classList.remove("banged"), { once: true });
+    setTimeout(() => bang.classList.remove("banged"), 200);
 }

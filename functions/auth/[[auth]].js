@@ -9,7 +9,8 @@ export async function onRequestGet(context) {
 }
 
 async function generateClientId(sessionId) {
-    const id = await crypto.subtle.digest("SHA-384", sessionId);
+    const sessionIdRaw = new TextEncoder().encode(decodeURIComponent(sessionId));
+    const id = await crypto.subtle.digest("SHA-384", sessionIdRaw);
     return encodeURIComponent(new TextDecoder().decode(id));
 }
 

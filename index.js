@@ -1,4 +1,4 @@
-import { initBumpDetector } from "./bumpDetection.js";
+import { initBumpDetector } from "/bumpDetection.js";
 
 const enableButton = document.querySelector(".start");
 enableButton.addEventListener("click", () => {
@@ -50,3 +50,21 @@ function onDoubleBump() {
     onBump();
     bumpSound.play();
 }
+
+
+const sessionId = crypto.getRandomValues(new Uint32Array(32));
+const sessionIdString = encodeURIComponent(new TextDecoder().decode(sessionId));
+
+const ably = new Ably.Realtime.Promise({
+    authCallback: async (tokenParams, callback) => {
+        const response = await fetch(`/auth/${sessionIdString}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const tokenRequest = await response.json();
+        callback(null, tokenRequest);
+    }
+});
+ably.connection.on("connected", () => { console.log("Connected to Ably") });

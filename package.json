@@ -3,6 +3,12 @@
     "version": "1.0.0",
     "main": "index.js",
     "author": "Holger Dal Mogensen",
+    "scripts": {
+        "start": "wrangler pages dev ."
+    },
+    "dependencies": {
+        "ably": "^1.2.39"
+    },
     "devDependencies": {
         "wrangler": "^2.17.0"
     }

@@ -1,0 +1,9 @@
+{
+    "name": "bump",
+    "version": "1.0.0",
+    "main": "index.js",
+    "author": "Holger Dal Mogensen",
+    "devDependencies": {
+        "wrangler": "^2.17.0"
+    }
+}

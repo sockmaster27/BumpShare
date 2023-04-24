@@ -9,14 +9,15 @@ export async function onRequestGet(context) {
 }
 
 async function generateClientId(sessionId) {
-    const sessionIdRaw = new TextEncoder().encode(decodeURIComponent(sessionId));
+    const sessionIdRaw = new TextEncoder().encode(sessionId);
     const id = await crypto.subtle.digest("SHA-384", sessionIdRaw);
-    return encodeURIComponent(new TextDecoder().decode(id));
+    const idString = Array.from(new Uint32Array(id)).map(n => n.toString(32)).join("");
+    return idString;
 }
 
 async function createTokenRequest(ably, clientId) {
     const capability = {
-        "*": ["subscribe", "presence"],
+        "*": ["presence", "subscribe"],
     };
 
     return new Promise((resolve, reject) => {

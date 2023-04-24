@@ -53,9 +53,10 @@ function onDoubleBump() {
 
 
 const sessionId = crypto.getRandomValues(new Uint32Array(32));
-const sessionIdString = encodeURIComponent(new TextDecoder().decode(sessionId));
+const sessionIdString = Array.from(sessionId).map(n => n.toString(32)).join("");
 
 const ably = new Ably.Realtime.Promise({
+    transportParams: { remainPresentFor: 1000 },
     authCallback: async (tokenParams, callback) => {
         const response = await fetch(`/auth/${sessionIdString}`, {
             method: "GET",
@@ -67,4 +68,24 @@ const ably = new Ably.Realtime.Promise({
         callback(null, tokenRequest);
     }
 });
-ably.connection.on("connected", () => { console.log("Connected to Ably") });
+
+const channel = ably.channels.get("bump");
+channel.presence.enter();
+
+channel.presence.subscribe("enter", onEnter);
+channel.presence.subscribe("present", onEnter);
+channel.presence.subscribe("leave", onLeave);
+
+function onEnter(member) {
+    const newDiv = document.createElement("div");
+    newDiv.setAttribute("class", "bang");
+    newDiv.style.marginTop = "10px";
+    newDiv.id = `ID${member.clientId}`;
+    document.querySelector("body").appendChild(
+        newDiv
+    );
+}
+
+function onLeave(member) {
+    document.querySelector(`#ID${member.clientId}`).remove()
+}

@@ -1,4 +1,4 @@
-import { initBumpDetector } from "/bumpDetection.js";
+import { initBumpDetector } from "./bumpDetection.js";
 
 const enableButton = document.querySelector(".start");
 enableButton.addEventListener("click", () => {

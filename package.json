@@ -1,15 +1,17 @@
 {
     "name": "bump",
     "version": "1.0.0",
-    "main": "index.js",
     "author": "Holger Dal Mogensen",
+    "type": "module",
     "scripts": {
         "start": "wrangler pages dev ./public --live-reload",
+        "build": "rollup --config rollup.config.js"
     },
     "dependencies": {
         "ably": "^1.2.39"
     },
     "devDependencies": {
+        "rollup": "^3.21.0",
         "wrangler": "^2.17.0"
     }
 }

@@ -4,7 +4,7 @@
     "main": "index.js",
     "author": "Holger Dal Mogensen",
     "scripts": {
-        "start": "wrangler pages dev ."
+        "start": "wrangler pages dev ./public --live-reload",
     },
     "dependencies": {
         "ably": "^1.2.39"

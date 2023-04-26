@@ -1,3 +1,5 @@
+import Ably from "ably";
+
 import { initBumpDetector } from "./bumpDetection.js";
 
 const enableButton = document.querySelector(".start");

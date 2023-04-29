@@ -1,6 +1,7 @@
-import Ably from "ably";
+import Identicon from "identicon.js";
 
 import { initBumpDetector } from "./bumpDetection.js";
+import { initNetwork } from "./network.js";
 
 const enableButton = document.querySelector(".start");
 enableButton.addEventListener("click", () => {
@@ -8,11 +9,42 @@ enableButton.addEventListener("click", () => {
     DeviceOrientationEvent.requestPermission?.();
     enableButton.remove();
 
-    const bang = document.querySelector(".bang");
-    bang.classList.remove("waiting");
+    const me = document.querySelector(".me");
+    me.classList.remove("waiting");
 
+    initNetwork(onConnect, onEnter, onLeave);
     initBumpDetector(onStable, onUnstable, onBump, onDoubleBump);
 });
+
+
+function generateIdenticon(clientId) {
+    var data = new Identicon(clientId, { background: [0, 0, 0, 0], format: "png" }).toString();
+    const img = document.createElement("img");
+    img.src = `data:image/png;base64,${data}`;
+    return img;
+}
+
+function onConnect(clientId) {
+    const me = document.querySelector(".me");
+    me.appendChild(generateIdenticon(clientId));
+    me.classList.add("connected");
+}
+
+function onEnter(member) {
+    const newDiv = document.createElement("div");
+    newDiv.setAttribute("class", "node");
+    newDiv.style.marginTop = "10px";
+    newDiv.id = `ID${member.clientId}`;
+    newDiv.appendChild(generateIdenticon(member.clientId));
+
+    document.querySelector("body").appendChild(
+        newDiv
+    );
+}
+
+function onLeave(member) {
+    document.querySelector(`#ID${member.clientId}`).remove()
+}
 
 
 const upSound = new Audio("resources/up.mp3");
@@ -33,61 +65,22 @@ function onUnstable() {
     // Cancel last bump
     bumpSound.pause();
     bumpSound.currentTime = 0;
-    const bang = document.querySelector(".bang");
-    bang.classList.remove("banged");
+    const node = document.querySelector(".me");
+    node.classList.remove("bumped");
 }
 
 function onBump() {
-    const bang = document.querySelector(".bang");
-    bang.classList.add("banged");
+    const me = document.querySelector(".me");
+    me.classList.add("bumped");
 
     // If this is triggered multiple times in a row, the transitionend event acts weird.
     // Only using setTimeout for timing the animation looks weird though, 
     // so it's just fallback if the transitionend doesn't successfully remove the class.
-    bang.addEventListener("transitionend", () => bang.classList.remove("banged"), { once: true });
-    setTimeout(() => bang.classList.remove("banged"), 200);
+    me.addEventListener("transitionend", () => me.classList.remove("bumped"), { once: true });
+    setTimeout(() => me.classList.remove("bumped"), 200);
 }
 
 function onDoubleBump() {
     onBump();
     bumpSound.play();
-}
-
-
-const sessionId = crypto.getRandomValues(new Uint32Array(32));
-const sessionIdString = Array.from(sessionId).map(n => n.toString(32)).join("");
-
-const ably = new Ably.Realtime.Promise({
-    transportParams: { remainPresentFor: 1000 },
-    authCallback: async (tokenParams, callback) => {
-        const response = await fetch(`/auth/${sessionIdString}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-        const tokenRequest = await response.json();
-        callback(null, tokenRequest);
-    }
-});
-
-const channel = ably.channels.get("bump");
-channel.presence.enter();
-
-channel.presence.subscribe("enter", onEnter);
-channel.presence.subscribe("present", onEnter);
-channel.presence.subscribe("leave", onLeave);
-
-function onEnter(member) {
-    const newDiv = document.createElement("div");
-    newDiv.setAttribute("class", "bang");
-    newDiv.style.marginTop = "10px";
-    newDiv.id = `ID${member.clientId}`;
-    document.querySelector("body").appendChild(
-        newDiv
-    );
-}
-
-function onLeave(member) {
-    document.querySelector(`#ID${member.clientId}`).remove()
 }

@@ -11,7 +11,7 @@ export async function onRequestGet(context) {
 async function generateClientId(sessionId) {
     const sessionIdRaw = new TextEncoder().encode(sessionId);
     const id = await crypto.subtle.digest("SHA-384", sessionIdRaw);
-    const idString = Array.from(new Uint32Array(id)).map(n => n.toString(32)).join("");
+    const idString = Array.from(new Uint16Array(id)).map(n => n.toString(16)).join("");
     return idString;
 }
 

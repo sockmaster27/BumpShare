@@ -8,7 +8,8 @@
         "build": "rollup --config rollup.config.js"
     },
     "dependencies": {
-        "ably": "^1.2.39"
+        "ably": "^1.2.39",
+        "identicon.js": "^2.3.3"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^24.1.0",

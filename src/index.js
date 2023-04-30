@@ -66,13 +66,13 @@ const bumpSound = new Audio("resources/bump.mp3");
 
 function onStable() {
     const body = document.querySelector("body");
-    body.style.backgroundColor = "green";
+    body.classList.add("stable");
     upSound.play();
 }
 
 function onUnstable() {
     const body = document.querySelector("body");
-    body.style.backgroundColor = "red";
+    body.classList.remove("stable");
     downSound.play();
 
     // Cancel last bump

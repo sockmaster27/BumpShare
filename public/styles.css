@@ -3,15 +3,19 @@
 }
 
 body {
-    background-color: red;
+    background-color: rgb(224, 242, 255);
     transition: background-color 0.3s;
     height: 100%;
     width: 100%;
     margin: 0;
 }
 
+body.stable {
+    background-color: rgb(20, 155, 20);
+}
+
 .start {
-    background-color: transparent;
+    background-color: rgba(0, 0, 0, 0.5);
     position: absolute;
     top: 0;
     left: 0;
@@ -34,6 +38,7 @@ body {
     width: 50px;
     border-radius: 50%;
     position: absolute;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.05);
 
     scale: 1;
     transition: scale 0.5s;

@@ -28,6 +28,7 @@ function generateIdenticon(clientId) {
 
 function onConnect(clientId) {
     const me = document.querySelector(".me");
+    me.querySelector("img")?.remove();
     me.appendChild(generateIdenticon(clientId));
     me.classList.remove("waiting");
 

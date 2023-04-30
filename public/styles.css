@@ -63,22 +63,27 @@ body.stable {
     width: 50px;
     border-radius: 50%;
     position: absolute;
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.05);
 
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.05);
     scale: 1;
-    transition: scale 0.5s;
+    transition: scale 0.5s, box-shadow 0.5s;
 }
 
 .node.me {
-    scale: 2;
+    scale: 3;
 }
 
 .node.me.waiting {
     scale: 0;
 }
 
+.stable .node.me {
+    scale: 2;
+}
+
 .node.me.bumped {
     scale: 2.5;
+    box-shadow: 0 0 10px 0 white;
     transition: scale 0.1s;
 }
 

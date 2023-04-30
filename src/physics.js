@@ -34,7 +34,7 @@ export class PhysSim {
 
     bump(id) {
         const before = this.weight[id];
-        this.weight[id] *= 1.5;
+        this.weight[id] *= 1.1;
         setTimeout(() => {
             this.weight[id] = before;
         }, 50);
@@ -46,27 +46,29 @@ export class PhysSim {
         const dt = Math.min(now - this.preTime, 50);
         this.preTime = now;
 
-        const damp = 0.9;
+        const damp = 0.8;
+        const centerPull = 0.0005;
+
         const acc = {};
         for (const id of this.ids) {
             const { x, y } = this.pos[id];
 
             // Drag towards center
             const w = this.weight[id];
-            let accX = -0.0005 * w * x;
-            let accY = -0.0005 * w * y;
+            let accX = -centerPull * w * x;
+            let accY = -centerPull * w * y;
 
             // Repel from other nodes
             for (const otherId of this.ids) {
                 if (id === otherId) continue;
 
                 // Declutter
-                if (this.pos[id].x === this.pos[otherId].x && this.pos[id].y === this.pos[otherId].y) this.pos[id].x += 10;
+                // if (this.pos[id].x === this.pos[otherId].x && this.pos[id].y === this.pos[otherId].y) this.pos[id].x += 10;
 
                 const dx = this.pos[id].x - this.pos[otherId].x;
                 const dy = this.pos[id].y - this.pos[otherId].y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                const force = (300 * this.weight[otherId] / Math.pow(dist, 3)) || 0;
+                const force = (3 * this.weight[otherId] / Math.pow(dist, 2));
                 accX += force * dx;
                 accY += force * dy;
             }

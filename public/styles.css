@@ -44,11 +44,15 @@ body.stable {
     transition: background-color 0.1s;
 }
 
+.upload.uploaded {
+    opacity: 0.8;
+}
+
 .upload:active {
     background-color: rgba(0, 0, 0, 0.7);
 }
 
-.upload>input[type="file"] {
+#file-input {
     display: none;
 }
 

@@ -5,7 +5,20 @@ import { initNetwork } from "./network.js";
 import { PhysSim } from "./physics.js";
 
 
-let phys = new PhysSim()
+let phys = new PhysSim();
+
+let uploaded = false;
+const uploadButton = document.querySelector(".upload");
+const uploadInput = document.querySelector("#file-input");
+uploadInput.addEventListener("change", () => {
+    const reader = new FileReader();
+    reader.onload = () => {
+        uploadButton.textContent = "Reselect";
+        uploadButton.classList.add("uploaded");
+    };
+    reader.readAsDataURL(uploadInput.files[0]);
+    uploaded = true;
+});
 
 
 const enableButton = document.querySelector(".start");

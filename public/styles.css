@@ -66,7 +66,7 @@ body.stable {
 
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.05);
     scale: 1;
-    transition: scale 0.5s, box-shadow 0.5s;
+    transition: scale 0.5s, box-shadow 0.5s, background-color 0.5s;
 }
 
 .node.me {
@@ -83,8 +83,15 @@ body.stable {
 
 .node.me.bumped {
     scale: 2.5;
-    box-shadow: 0 0 10px 0 white;
+    box-shadow: 0 0 10px 0 aliceblue;
     transition: scale 0.1s;
+}
+
+.node.me.double-bumped {
+    background-color: rgb(192, 255, 192);
+    scale: 3;
+    box-shadow: 0 0 20px 0 aliceblue;
+    transition: scale 0.1s, background-color 0.1s;
 }
 
 .node>img {

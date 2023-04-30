@@ -96,6 +96,11 @@ function onBump() {
 }
 
 function onDoubleBump() {
-    onBump();
+    const me = document.querySelector(".me");
+    me.classList.add("double-bumped");
+    phys.bump("me");
+    me.addEventListener("transitionend", () => me.classList.remove("double-bumped"), { once: true });
+    setTimeout(() => me.classList.remove("double-bumped"), 200);
+
     bumpSound.play();
 }

@@ -22,7 +22,7 @@ export function initNetwork(onConnect, onEnter, onLeave) {
         }
     });
 
-    const channel = ably.channels.get("bump");
+    const channel = ably.channels.get("presence:bump");
     channel.presence.enter();
 
     channel.presence.subscribe("enter", (m) => { if (m.clientId !== clientId) onEnter(m) });

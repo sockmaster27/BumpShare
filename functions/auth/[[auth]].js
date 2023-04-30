@@ -17,7 +17,7 @@ async function generateClientId(sessionId) {
 
 async function createTokenRequest(ably, clientId) {
     const capability = {
-        "*": ["presence", "subscribe"],
+        "presence:*": ["presence", "subscribe"],
     };
 
     return new Promise((resolve, reject) => {

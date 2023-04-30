@@ -2,15 +2,17 @@ import Identicon from "identicon.js";
 
 import { initBumpDetector } from "./bumpDetection.js";
 import { initNetwork } from "./network.js";
+import { PhysSim } from "./physics.js";
+
+
+let phys = new PhysSim()
+
 
 const enableButton = document.querySelector(".start");
 enableButton.addEventListener("click", () => {
     // Safari requires a user gesture to enable device orientation events.
     DeviceOrientationEvent.requestPermission?.();
     enableButton.remove();
-
-    const me = document.querySelector(".me");
-    me.classList.remove("waiting");
 
     initNetwork(onConnect, onEnter, onLeave);
     initBumpDetector(onStable, onUnstable, onBump, onDoubleBump);
@@ -27,23 +29,34 @@ function generateIdenticon(clientId) {
 function onConnect(clientId) {
     const me = document.querySelector(".me");
     me.appendChild(generateIdenticon(clientId));
-    me.classList.add("connected");
+    me.classList.remove("waiting");
+
+    phys.addNode("me", 0, 0, 2, (x, y) => {
+        me.style.setProperty("--x", `${x}px`);
+        me.style.setProperty("--y", `${y}px`);
+    });
 }
 
 function onEnter(member) {
     const newDiv = document.createElement("div");
     newDiv.setAttribute("class", "node");
-    newDiv.style.marginTop = "10px";
     newDiv.id = `ID${member.clientId}`;
     newDiv.appendChild(generateIdenticon(member.clientId));
 
     document.querySelector("body").appendChild(
         newDiv
     );
+
+    const vPos = Math.random() * 300 - 150;
+    phys.addNode(member.clientId, vPos, -200, 1, (x, y) => {
+        newDiv.style.setProperty("--x", `${x}px`);
+        newDiv.style.setProperty("--y", `${y}px`);
+    });
 }
 
 function onLeave(member) {
     document.querySelector(`#ID${member.clientId}`).remove()
+    phys.removeNode(member.clientId);
 }
 
 
@@ -72,6 +85,7 @@ function onUnstable() {
 function onBump() {
     const me = document.querySelector(".me");
     me.classList.add("bumped");
+    phys.bump("me");
 
     // If this is triggered multiple times in a row, the transitionend event acts weird.
     // Only using setTimeout for timing the animation looks weird though, 

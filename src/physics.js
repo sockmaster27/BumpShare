@@ -34,7 +34,7 @@ export class PhysSim {
 
     bump(id) {
         const before = this.weight[id];
-        this.weight[id] *= 1.1;
+        this.weight[id] *= 1.05;
         setTimeout(() => {
             this.weight[id] = before;
         }, 50);
@@ -61,9 +61,6 @@ export class PhysSim {
             // Repel from other nodes
             for (const otherId of this.ids) {
                 if (id === otherId) continue;
-
-                // Declutter
-                // if (this.pos[id].x === this.pos[otherId].x && this.pos[id].y === this.pos[otherId].y) this.pos[id].x += 10;
 
                 const dx = this.pos[id].x - this.pos[otherId].x;
                 const dy = this.pos[id].y - this.pos[otherId].y;

@@ -34,7 +34,14 @@ export class NetworkConnection {
         });
     }
 
-    publish(message, onSentTo) {
+    async share(file) {
+        await fetch(`/share/${this.sessionId}`, {
+            method: "POST",
+            body: file,
+        });
+    }
+
+    announce(onSentTo) {
         const pubChannel = this.ably.channels.get(`publish:${this.clientId}`);
         pubChannel.subscribe("listen", onSentTo);
 
@@ -42,46 +49,14 @@ export class NetworkConnection {
         announceChannel.publish("", "");
 
         setTimeout(() => {
-            pubChannel.publish("share", message);
             pubChannel.unsubscribe("listen", onSentTo);
         }, pubDelay);
     }
 
     async request() {
-        let publishers;
-
-        const requestAbly = new Ably.Realtime.Promise({
-            authCallback: async (tokenParams, callback) => {
-                const response = await fetch(`/share/${this.sessionId}`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                const { publishIds, tokenRequest } = await response.json();
-                publishers = publishIds;
-                callback(null, tokenRequest);
-            }
+        const response = await fetch(`/share/${this.sessionId}`, {
+            method: "GET",
         });
-
-        await requestAbly.connection.once("connected");
-
-        const received = [];
-
-        return new Promise((resolve, reject) => {
-            for (const id of publishers) {
-                const pubChannel = requestAbly.channels.get(`publish:${id}`);
-
-                function callback(message) {
-                    received.push([message.clientId, message.data]);
-                }
-                pubChannel.subscribe("share", callback);
-            }
-
-            setTimeout(() => {
-                requestAbly.close();
-                resolve(received);
-            }, pubDelay);
-        });
+        return await response.json();
     }
 }

@@ -13,16 +13,17 @@ document.querySelector(".test").addEventListener("click", onDoubleBump);
 
 let network;
 const phys = new PhysSim();
-let uploaded;
+let uploaded = false;
 
 const uploadButton = document.querySelector(".upload");
 const uploadInput = document.querySelector("#file-input");
 uploadInput.addEventListener("change", () => {
     const reader = new FileReader();
     reader.onload = () => {
+        network.share(reader.result);
         uploadButton.textContent = "Reselect";
         uploadButton.classList.add("uploaded");
-        uploaded = reader.result;
+        uploaded = true;
     };
     reader.readAsDataURL(uploadInput.files[0]);
 });
@@ -125,11 +126,9 @@ async function onDoubleBump() {
     bumpSound.play();
 
     // Sync files
-    if (uploaded) network.publish(uploaded, onSentTo);
+    if (uploaded) network.announce(onSentTo);
     const received = await network.request();
-    for (const [clientId, data] of received) {
-        onReceived(clientId, data);
-    }
+    console.log(received);
 }
 
 

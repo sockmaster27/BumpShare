@@ -1,5 +1,10 @@
 name = "bump"
 compatibility_date = "2023-04-24"
 
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "bump"
+preview_bucket_name = "bump-dev"
+
 # Necessary environment variables:
 # ABLY_API_KEY: API key for the Ably app (https://faqs.ably.com/setting-up-and-managing-api-keys)

@@ -1,13 +1,20 @@
 import Identicon from "identicon.js";
 
 import { initBumpDetector } from "./bumpDetection.js";
-import { initNetwork } from "./network.js";
+import { NetworkConnection } from "./network.js";
 import { PhysSim } from "./physics.js";
 
 
-let phys = new PhysSim();
 
-let uploaded = false;
+document.querySelector(".test").addEventListener("click", onDoubleBump);
+
+
+
+
+let network;
+const phys = new PhysSim();
+let uploaded;
+
 const uploadButton = document.querySelector(".upload");
 const uploadInput = document.querySelector("#file-input");
 uploadInput.addEventListener("change", () => {
@@ -15,9 +22,9 @@ uploadInput.addEventListener("change", () => {
     reader.onload = () => {
         uploadButton.textContent = "Reselect";
         uploadButton.classList.add("uploaded");
+        uploaded = reader.result;
     };
     reader.readAsDataURL(uploadInput.files[0]);
-    uploaded = true;
 });
 
 
@@ -27,8 +34,8 @@ enableButton.addEventListener("click", () => {
     DeviceOrientationEvent.requestPermission?.();
     enableButton.remove();
 
-    initNetwork(onConnect, onEnter, onLeave);
     initBumpDetector(onStable, onUnstable, onBump, onDoubleBump);
+    network = new NetworkConnection(onConnect, onEnter, onLeave);
 });
 
 
@@ -108,7 +115,7 @@ function onBump() {
     setTimeout(() => me.classList.remove("bumped"), 200);
 }
 
-function onDoubleBump() {
+async function onDoubleBump() {
     const me = document.querySelector(".me");
     me.classList.add("double-bumped");
     phys.bump("me");
@@ -116,4 +123,20 @@ function onDoubleBump() {
     setTimeout(() => me.classList.remove("double-bumped"), 200);
 
     bumpSound.play();
+
+    // Sync files
+    if (uploaded) network.publish(uploaded, onSentTo);
+    const received = await network.request();
+    for (const [clientId, data] of received) {
+        onReceived(clientId, data);
+    }
+}
+
+
+function onSentTo(clientId) {
+    console.log(`Sent to ${clientId}`);
+}
+
+function onReceived(clientId, data) {
+    console.log(`Received from ${clientId}`);
 }

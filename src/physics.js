@@ -6,6 +6,8 @@ export class PhysSim {
         this.vel = {};
         this.setPos = {};
 
+        this.edges = [];
+
         this.preTime = performance.now();
 
         const simulate = () => {
@@ -24,12 +26,18 @@ export class PhysSim {
         setPos(x, y);
     }
 
+    addEdge(node1, node2) {
+        this.edges.push([node1, node2]);
+    }
+
     removeNode(id) {
         this.ids = this.ids.filter(i => i !== id);
         delete this.weight[id];
         delete this.pos[id];
         delete this.vel[id];
         delete this.setPos[id];
+
+        this.edges = this.edges.filter(e => e[0] !== id && e[1] !== id);
     }
 
     bump(id) {
@@ -62,10 +70,13 @@ export class PhysSim {
             for (const otherId of this.ids) {
                 if (id === otherId) continue;
 
+                const connected = this.edges.some(e =>
+                    (e[0] === id && e[1] === otherId) || (e[0] === otherId && e[1] === id)
+                );
                 const dx = this.pos[id].x - this.pos[otherId].x;
                 const dy = this.pos[id].y - this.pos[otherId].y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                const force = (3 * this.weight[otherId] / Math.pow(dist, 2));
+                const force = (3 * this.weight[otherId] / Math.pow(dist, 2)) * (connected ? 0.5 : 1);
                 accX += force * dx;
                 accY += force * dy;
             }

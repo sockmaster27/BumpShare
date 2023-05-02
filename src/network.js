@@ -43,7 +43,7 @@ export class NetworkConnection {
 
     announce(onSentTo) {
         const pubChannel = this.ably.channels.get(`publish:${this.clientId}`);
-        pubChannel.subscribe("listen", onSentTo);
+        pubChannel.subscribe("listen", m => onSentTo(m.data));
 
         const announceChannel = this.ably.channels.get("announce");
         announceChannel.publish("", "");
@@ -54,9 +54,9 @@ export class NetworkConnection {
     }
 
     async request() {
-        const response = await fetch(`/share/${this.sessionId}`, {
+        const files = await fetch(`/share/${this.sessionId}`, {
             method: "GET",
         });
-        return await response.json();
+        return await files.json();
     }
 }

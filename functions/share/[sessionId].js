@@ -29,7 +29,7 @@ export async function onRequestGet(context) {
     const objects = await Promise.all(publishIds.map(id => context.env.BUCKET.get(id)));
     const files = await Promise.all(objects.map(o => o.text()));
 
-    return new Response(JSON.stringify({ publishIds, files }));
+    return new Response(JSON.stringify(files));
 }
 
 async function getHistory(ably) {

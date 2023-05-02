@@ -56,6 +56,53 @@ body.stable {
     display: none;
 }
 
+.received {
+    visibility: hidden;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 100%;
+    width: 100%;
+    overflow: scroll;
+}
+
+.received>.contents {
+    background-color: white;
+    width: 320px;
+    margin: auto;
+    margin-top: 20px;
+    border-radius: 8px;
+    padding: 15px;
+    padding-bottom: 5px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4);
+    box-sizing: border-box;
+}
+
+.received>.contents>button {
+    color: rgb(152, 152, 152);
+    background-color: transparent;
+    margin-bottom: 10px;
+    border: none;
+}
+
+.received>.contents>img {
+    width: 100%;
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.4);
+    margin-bottom: 10px;
+}
+
+.nodes {
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
 .node {
     --x: 0px;
     --y: 0px;

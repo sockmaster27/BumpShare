@@ -29,6 +29,15 @@ uploadInput.addEventListener("change", () => {
 });
 
 
+const receivedDiv = document.querySelector(".received");
+const receivedContentsDiv = receivedDiv.querySelector(".contents");
+const receivedClose = receivedContentsDiv.querySelector("button");
+receivedClose.addEventListener("click", () => {
+    receivedDiv.style.visibility = "hidden";
+    receivedContentsDiv.querySelectorAll("img").forEach(img => img.remove());
+});
+
+
 const enableButton = document.querySelector(".start");
 enableButton.addEventListener("click", () => {
     // Safari requires a user gesture to enable device orientation events.
@@ -65,7 +74,7 @@ function onEnter(member) {
     newDiv.id = `ID${member.clientId}`;
     newDiv.appendChild(generateIdenticon(member.clientId));
 
-    document.querySelector("body").appendChild(
+    document.querySelector(".nodes").appendChild(
         newDiv
     );
 
@@ -127,15 +136,26 @@ async function onDoubleBump() {
 
     // Sync files
     if (uploaded) network.announce(onSentTo);
-    const received = await network.request();
-    console.log(received);
+    const files = await network.request();
+    onReceived(files);
 }
 
 
 function onSentTo(clientId) {
-    console.log(`Sent to ${clientId}`);
+    phys.addEdge("me", clientId);
 }
 
-function onReceived(clientId, data) {
-    console.log(`Received from ${clientId}`);
+function onReceived(files) {
+    if (files.length === 0) return;
+
+    const receivedDiv = document.querySelector(".received");
+    const receivedContentsDiv = receivedDiv.querySelector(".contents");
+
+    for (const file of files) {
+        const newImg = document.createElement("img");
+        newImg.src = file;
+        receivedContentsDiv.appendChild(newImg);
+    }
+
+    receivedDiv.style.visibility = "visible";
 }

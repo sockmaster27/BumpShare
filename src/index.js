@@ -1,6 +1,6 @@
 import Identicon from "identicon.js";
 
-import { initBumpDetector } from "./bumpDetection.js";
+import { BumpDetector } from "./bumpDetection.js";
 import { NetworkConnection } from "./network.js";
 import { PhysSim } from "./physics.js";
 
@@ -12,6 +12,7 @@ document.querySelector(".test").addEventListener("click", onDoubleBump);
 
 
 let network;
+let bumpDetector;
 const phys = new PhysSim();
 let uploaded = false;
 
@@ -35,6 +36,7 @@ const receivedClose = receivedContentsDiv.querySelector("button");
 receivedClose.addEventListener("click", () => {
     receivedDiv.style.visibility = "hidden";
     receivedContentsDiv.querySelectorAll("img").forEach(img => img.remove());
+    bumpDetector = new BumpDetector(onStable, onUnstable, onBump, onDoubleBump);
 });
 
 
@@ -44,7 +46,7 @@ enableButton.addEventListener("click", () => {
     DeviceOrientationEvent.requestPermission?.();
     enableButton.remove();
 
-    initBumpDetector(onStable, onUnstable, onBump, onDoubleBump);
+    bumpDetector = new BumpDetector(onStable, onUnstable, onBump, onDoubleBump);
     network = new NetworkConnection(onConnect, onEnter, onLeave);
 });
 
@@ -158,4 +160,5 @@ function onReceived(files) {
     }
 
     receivedDiv.style.visibility = "visible";
+    bumpDetector.stop();
 }

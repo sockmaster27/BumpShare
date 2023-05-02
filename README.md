@@ -1,6 +1,6 @@
 # BumpShare
 
-This app is hosted wioth CloudFlare Pages on [bumpshare.pages.dev](https://bumpshare.pages.dev/)
+This app is hosted with CloudFlare Pages on [bumpshare.pages.dev](https://bumpshare.pages.dev/)
 
 ## How to use
 1. Have at least 2 mobile devices on the page simultaneously

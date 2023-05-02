@@ -5,12 +5,6 @@ import { NetworkConnection } from "./network.js";
 import { PhysSim } from "./physics.js";
 
 
-
-document.querySelector(".test").addEventListener("click", onDoubleBump);
-
-
-
-
 let network;
 let bumpDetector;
 const phys = new PhysSim();

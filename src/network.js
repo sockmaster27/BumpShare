@@ -4,6 +4,12 @@ import { pubDelay } from "../config.js";
 
 export class NetworkConnection {
     constructor(onConnect, onEnter, onLeave) {
+        this.onEnter = onEnter;
+        this.onLeave = onLeave;
+
+        this.isPresent = false;
+        this.present = [];
+
         const sessionIdRaw = crypto.getRandomValues(new Uint16Array(32));
         this.sessionId = Array.from(sessionIdRaw).map(n => n.toString(16)).join("");
 
@@ -26,12 +32,40 @@ export class NetworkConnection {
             onConnect(this.clientId);
 
             const channel = this.ably.channels.get("presence:bump");
-            channel.presence.enter();
-
-            channel.presence.subscribe("enter", (m) => { if (m.clientId !== this.clientId) onEnter(m) });
-            channel.presence.subscribe("present", (m) => { if (m.clientId !== this.clientId) onEnter(m) });
-            channel.presence.subscribe("leave", onLeave);
+            const enter = m => {
+                if (m.clientId !== this.clientId) {
+                    this.present.push(m.clientId);
+                    if (this.isPresent) this.onEnter(m);
+                }
+            }
+            const leave = m => {
+                if (m.clientId !== this.clientId) {
+                    this.present = this.present.filter(id => id !== m.clientId);
+                    if (this.isPresent) this.onLeave(m);
+                }
+            };
+            channel.presence.subscribe("enter", enter);
+            channel.presence.subscribe("present", enter);
+            channel.presence.subscribe("leave", leave);
         });
+    }
+
+    enterPresence() {
+        this.isPresent = true;
+        const channel = this.ably.channels.get("presence:bump");
+        channel.presence.enter();
+        for (const id of this.present) {
+            this.onEnter({ clientId: id });
+        }
+    }
+
+    leavePresence() {
+        this.isPresent = false;
+        const channel = this.ably.channels.get("presence:bump");
+        channel.presence.leave();
+        for (const id of this.present) {
+            this.onLeave({ clientId: id });
+        }
     }
 
     async share(file) {

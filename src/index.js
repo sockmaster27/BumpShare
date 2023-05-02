@@ -95,12 +95,16 @@ function onStable() {
     const body = document.querySelector("body");
     body.classList.add("stable");
     upSound.play();
+    network.enterPresence();
 }
 
 function onUnstable() {
     const body = document.querySelector("body");
     body.classList.remove("stable");
     downSound.play();
+
+    network.leavePresence();
+
 
     // Cancel last bump
     bumpSound.pause();

@@ -24,7 +24,7 @@ export class BumpDetector {
         /**
          * The time in milliseconds that the device has to be unstable for the state to change
          */
-        this.unstableDelay = 100;
+        this.unstableDelay = 200;
         /**
          * Whether or not the device was stable in the last event
          */
